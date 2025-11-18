@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>'나우 유 씨 미 3' 토픽 분석 대시보드</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Chosen Palette: Warm Neutrals (Stone, Amber, Red, Green, Sky) -->
+    <!-- Application Structure Plan: A single-page dashboard with three main sections: 1) '핵심 요약' with KPIs and a topic distribution donut chart, 2) '주요 토픽 상세 분석' using interactive buttons to dynamically display details for each of the 4 topics, and 3) '결론 및 인사이트' for final takeaways. This structure prioritizes immediate high-level understanding (chart) followed by user-driven, focused exploration (dynamic content) rather than a linear report. -->
+    <!-- Visualization & Content Choices: 
+        - Topic Distribution (Sec 3): [Goal: Inform Proportions] -> [Viz: Donut Chart] -> [Interaction: Hover tooltip] -> [Justification: Clear part-to-whole view of topic weights] -> [Library: Chart.js Canvas]
+        - 4 Topic Details (Sec 2): [Goal: Organize/Explore] -> [Viz: Dynamic Content Block] -> [Interaction: Click buttons to update content] -> [Justification: Clean UI, user-controlled drill-down] -> [Library: Vanilla JS]
+        - Topic Sentiments (Sec 2): [Goal: Inform] -> [Viz: Colored Badges] -> [Interaction: None] -> [Justification: Quick visual cue for sentiment] -> [Library: HTML/Tailwind]
+        - Keywords (Sec 2): [Goal: Inform] -> [Viz: Styled Tags/Pills] -> [Interaction: None] -> [Justification: Visually group keywords] -> [Library: HTML/Tailwind]
+        - Overview/Conclusion (Sec 1, 4): [Goal: Inform] -> [Viz: Text Blocks] -> [Interaction: None] -> [Justification: Direct presentation of analysis] -> [Library: HTML/Tailwind]
+      -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap');
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 450px;
+            height: 350px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 400px;
+            }
+        }
+        .topic-btn {
+            @apply px-4 py-3 text-base text-center border-b-4 transition-all duration-200;
+        }
+        
+        .topic-btn.inactive {
+            @apply border-transparent font-medium;
+        }
+
+        .topic-btn[data-topic="topic1"] {
+            @apply text-red-600 hover:text-red-700;
+        }
+        .topic-btn[data-topic="topic1"].active {
+            @apply border-red-600 text-red-700 font-bold bg-red-50;
+        }
+
+        .topic-btn[data-topic="topic2"] {
+            @apply text-sky-600 hover:text-sky-700;
+        }
+        .topic-btn[data-topic="topic2"].active {
+            @apply border-sky-600 text-sky-700 font-bold bg-sky-50;
+        }
+
+        .topic-btn[data-topic="topic3"] {
+            @apply text-gray-600 hover:text-gray-700;
+        }
+        .topic-btn[data-topic="topic3"].active {
+            @apply border-gray-600 text-gray-700 font-bold bg-gray-50;
+        }
+
+        .topic-btn[data-topic="topic4"] {
+            @apply text-emerald-600 hover:text-emerald-700;
+        }
+        .topic-btn[data-topic="topic4"].active {
+            @apply border-emerald-600 text-emerald-700 font-bold bg-emerald-50;
+        }
+    </style>
+</head>
+<body class="bg-stone-50 text-stone-900 antialiased">
+
+    <div class="max-w-6xl mx-auto p-4 sm:p-6 lg:p-8">
+        
+        <header class="mb-10">
+            <h1 class="text-3xl md:text-4xl font-bold text-center text-stone-800">
+                '나우 유 씨 미 3' 토픽 모델 분석
+            </h1>
+            <p class="text-center text-stone-600 mt-2">
+                네이버 영화 감상평 50개 기반 (2025.11.17. ~ 2025.11.18.)
+            </p>
+            <div class="flex justify-center mt-6">
+                <a href="index.html" class="px-5 py-2 bg-red-600 text-white font-semibold rounded-lg shadow-md hover:bg-red-700 transition-colors duration-200">
+                    → 감성분석 대시보드로 이동
+                </a>
+            </div>
+        </header>
+
+        <main class="space-y-12">
+            
+            <section id="summary" class="bg-white p-6 rounded-lg shadow-lg">
+                <h2 class="text-2xl font-bold text-stone-800 mb-6 text-center">핵심 요약</h2>
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+                    <div>
+                        <div class="flex justify-around mb-6 text-center">
+                            <div class="kpi-card">
+                                <span class="text-4xl font-bold text-amber-700">50<span class="text-xl">개</span></span>
+                                <p class="text-sm font-medium text-stone-500 mt-1">분석 리뷰 수</p>
+                            </div>
+                            <div class="kpi-card">
+                                <span class="text-4xl font-bold text-amber-700">4<span class="text-xl">개</span></span>
+                                <p class="text-sm font-medium text-stone-500 mt-1">주요 토픽</p>
+                            </div>
+                        </div>
+                        <h3 class="text-lg font-semibold text-stone-700 mb-2">분석 개요</h3>
+                        <p class="text-stone-700 text-base">
+                            총 50개의 감상평을 분석한 결과, 관객들의 리뷰는 크게 4개의 핵심 주제로 수렴하는 경향을 보였습니다. 9년 만의 속편이라는 특성상, 대부분의 주제는 '기존 시리즈' 및 '등장인물(호스맨)'과 깊은 연관성을 가졌습니다.
+                        </p>
+                        <p class="text-stone-700 text-base mt-2">
+                            전반적으로 관객들은 '기존 호스맨의 활약'을 기대했으나, 영화가 '신규 캐릭터 중심의 세대교체'를 시도하면서 발생한 <span class="font-bold text-amber-700">기대와의 불일치</span>가 가장 큰 토픽을 형성했습니다.
+                        </p>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-semibold text-stone-700 mb-2 text-center">토픽 분포</h3>
+                        <div class="chart-container">
+                            <canvas id="topicDonutChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="topic-details" class="bg-white p-6 rounded-lg shadow-lg">
+                <h2 class="text-2xl font-bold text-stone-800 mb-6 text-center">주요 토픽 상세 분석</h2>
+                
+                <p class="text-base text-stone-700 mb-6 max-w-3xl mx-auto text-center">
+                    관객 리뷰에서 도출된 4가지 주요 토픽입니다. 버튼을 클릭하여 각 토픽의 상세 요약, 주요 키워드 및 대표 인용 리뷰를 확인해 보세요.
+                </p>
+
+                <div class="border-b border-stone-300 mb-8">
+                    <div class="flex flex-wrap justify-center -mb-px gap-4" id="topic-selector">
+                        <button class="topic-btn active" data-topic="topic1">Topic 1: 세대교체/호스맨</button>
+                        <button class="topic-btn inactive" data-topic="topic2">Topic 2: 전작과 비교</button>
+                        <button class="topic-btn inactive" data-topic="topic3">Topic 3: 킬링타임</button>
+                        <button class="topic-btn inactive" data-topic="topic4">Topic 4: 단순 긍정</button>
+                    </div>
+                </div>
+
+                <div id="topic-content-display" class="bg-stone-50 p-6 rounded-lg border border-stone-200 min-h-[300px]">
+                </div>
+            </section>
+
+            <section id="conclusion" class="bg-white p-6 rounded-lg shadow-lg">
+                <h2 class="text-2xl font-bold text-stone-800 mb-6 text-center">결론 및 인사이트</h2>
+                <div class="space-y-4 max-w-3xl mx-auto">
+                    <div class="flex items-start gap-3">
+                        <span class="text-xl text-amber-600 mt-1">1.</span>
+                        <div>
+                            <h3 class="font-semibold text-stone-800">핵심 팬층의 실망</h3>
+                            <p class="text-stone-700">리뷰에서 가장 구체적이고 강한 목소리를 내는 그룹은 '세대교체'와 '전작 비교'(Topic 1, 2)를 언급한 관객들입니다. 이는 9년간 시리즈를 기다려온 핵심 팬층일 가능성이 높으며, 이들은 영화의 방향성에 크게 실망했습니다.</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start gap-3">
+                        <span class="text-xl text-amber-600 mt-1">2.</span>
+                        <div>
+                            <h3 class="font-semibold text-stone-800">호불호의 명확한 원인</h3>
+                            <p class="text-stone-700">감성 분석에서 '호불호가 갈린다'는 결론이 나온 이유가 토픽 분석을 통해 명확해졌습니다. 영화에 대한 만족/불만족이 '재미'라는 단순한 기준이 아니라, "스토리 방향성(세대교체)에 대한 동의 여부"라는 특정 주제에 따라 극명하게 나뉘고 있습니다.</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start gap-3">
+                        <span class="text-xl text-amber-600 mt-1">3.</span>
+                        <div>
+                            <h3 class="font-semibold text-stone-800">일반 관객의 중립적 만족</h3>
+                            <p class="text-stone-700">Topic 3과 4가 합계 60%를 차지하는 것은, 영화가 핵심 팬층의 기대는 충족시키지 못했으나 가볍게 즐기려는 일반 관객(Light User)의 기준은 어느 정도 만족시켰음을 시사합니다.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+
+            const topicData = {
+                topic1: {
+                    title: "Topic 1: '세대교체'와 기존 '호스맨'의 역할",
+                    sentiment: "매우 부정적",
+                    sentimentColor: "text-red-600",
+                    summary: "영화의 가장 큰 논쟁거리입니다. 관객들은 9년간 기다려온 기존 호스맨(원년 멤버)의 활약을 기대했으나, 신규 캐릭터들이 부각되고 기존 캐릭터들이 조연이나 들러리처럼 소모되는 것에 대한 강한 불만과 실망감이 이 토픽의 핵심입니다.",
+                    keywords: ["세대교체", "호스맨", "들러리", "기존캐 하대", "신삥", "원멤버"],
+                    quotes: [
+                        "9년 만에 돌아와서 ... 완전 호스맨을 들러리로 만들어 버리는게 말이 되냐 난 호스맨이 활약하는걸 보고 싶었다고",
+                        "마술할 시간에 대신나온 어줍잖은 세대교체",
+                        "1,2편을 안본 나도 기존캐를 하대하는게 불편했다"
+                    ]
+                },
+                topic2: {
+                    title: "Topic 2: 전작과의 비교 (스케일, 연출, 재미)",
+                    sentiment: "부정적 / 중립적",
+                    sentimentColor: "text-sky-600",
+                    summary: "많은 리뷰가 1편과 2편을 직접 언급하며 3편과 비교합니다. 이 주제의 리뷰들은 대부분 3편의 마술 트릭 스케일이 더 작아졌고, 연출이 촌스러워졌으며, 1편만큼의 신선함이나 놀라움이 없다고 평가합니다.",
+                    keywords: ["1편", "2편", "전작", "스케일", "트릭", "연출", "약해졌다", "허술했다"],
+                    quotes: [
+                        "아직까지는 1편이 제일 낫고 그 다음 2편.. 3편이 재미는 제일 떨어지네요",
+                        "트릭의 스케일은 작아졌다 ... 여전히 유효한 매직쇼",
+                        "올드하고 촌스러운 연출과 무빙."
+                    ]
+                },
+                topic3: {
+                    title: "Topic 3: '킬링타임용' 중립적 오락성",
+                    sentiment: "중립적",
+                    sentimentColor: "text-gray-600",
+                    summary: "영화에 큰 기대를 하지 않았거나, 혹은 실망했지만 '시간 때우기' 용도로는 나쁘지 않았다고 평가하는 중립적 입장입니다. '쏘쏘', '볼만함', '그냥저냥' 등의 표현이 특징이며, 긍정/부정 토픽만큼 강한 의견을 표출하지 않습니다.",
+                    keywords: ["킬링타임용", "볼만함", "그냥저냥", "기대 안 하고", "쏘쏘", "아쉬운"],
+                    quotes: [
+                        "기대안하고 봤는데 볼만함",
+                        "킬링타임용으로 봤는데도 조금 아쉬운",
+                        "괜찮은 듯 아쉬운 듯 쏘쏘"
+                    ]
+                },
+                topic4: {
+                    title: "Topic 4: 단순 긍정 평가 (볼거리와 귀환)",
+                    sentiment: "긍정적",
+                    sentimentColor: "text-emerald-600",
+                    summary: "비판적인 분석 없이 영화 관람 자체에 만족을 표하는 긍정적 그룹입니다. '재미있다', '신기하다' 등 직관적인 호평과 함께, 오랜만에 시리즈가 돌아온 것 자체를 '반갑다', '유쾌하다'고 평가합니다.",
+                    keywords: ["재밌게 봤어요", "좋아요", "볼거리", "유쾌하고", "반갑고", "신기한"],
+                    quotes: [
+                        "보는 내내 즐거운 작품배우들의 케미가 좋아요",
+                        "재밌었고 신기한 영화였어요!!",
+                        "나우유씨미 시리즈는 늘 봐도 유쾌하고 눈이 즐거운 영화네요"
+                    ]
+                }
+            };
+
+            const donutChartData = {
+                labels: [
+                    'Topic 3 (킬링타임/중립)', 
+                    'Topic 4 (단순 긍정)', 
+                    'Topic 1 (세대교체/호스맨)', 
+                    'Topic 2 (전작/스케일 비교)'
+                ],
+                percentages: [30, 30, 24, 16],
+                colors: ['#78716c', '#10b981', '#ef4444', '#0ea5e9']
+            };
+
+            function createDonutChart() {
+                const ctx = document.getElementById('topicDonutChart').getContext('2d');
+                new Chart(ctx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: donutChartData.labels,
+                        datasets: [{
+                            data: donutChartData.percentages,
+                            backgroundColor: donutChartData.colors,
+                            borderColor: '#ffffff',
+                            borderWidth: 2
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        cutout: '60%',
+                        plugins: {
+                            legend: {
+                                position: 'bottom',
+                                labels: {
+                                    font: {
+                                        family: "'Noto Sans KR', sans-serif"
+                                    }
+                                }
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        let label = context.label || '';
+                                        if (label) {
+                                            label += ': ';
+                                        }
+                                        if (context.parsed) {
+                                            label += `${context.parsed}%`;
+                                        }
+                                        return label;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+
+            const topicSelector = document.getElementById('topic-selector');
+            const topicDisplay = document.getElementById('topic-content-display');
+
+            function updateTopicDisplay(topicId) {
+                const data = topicData[topicId];
+                if (!data) return;
+
+                let keywordsHtml = data.keywords.map(kw => 
+                    `<span class="bg-stone-200 text-stone-700 px-3 py-1 rounded-full text-sm">${kw}</span>`
+                ).join(' ');
+
+                let quotesHtml = data.quotes.map(q =>
+                    `<li class="border-l-4 border-stone-300 pl-3 italic text-stone-600">"${q}"</li>`
+                ).join('');
+
+                topicDisplay.innerHTML = `
+                    <h3 class="text-xl font-bold ${data.sentimentColor} mb-2">${data.title}</h3>
+                    <p class="font-medium ${data.sentimentColor} mb-4">(주요 감성: ${data.sentiment})</p>
+                    
+                    <h4 class="font-semibold text-stone-700 mb-2">주제 요약</h4>
+                    <p class="text-stone-800 mb-4">${data.summary}</p>
+                    
+                    <h4 class="font-semibold text-stone-700 mb-3">관련 키워드</h4>
+                    <div class="flex flex-wrap gap-2 mb-6">
+                        ${keywordsHtml}
+                    </div>
+                    
+                    <h4 class="font-semibold text-stone-700 mb-3">주요 인용 리뷰</h4>
+                    <ul class="space-y-3">
+                        ${quotesHtml}
+                    </ul>
+                `;
+            }
+
+            topicSelector.addEventListener('click', (e) => {
+                const button = e.target.closest('button');
+                if (!button) return;
+
+                const topicId = button.dataset.topic;
+                
+                topicSelector.querySelectorAll('button').forEach(btn => {
+                    btn.classList.remove('active');
+                    btn.classList.add('inactive');
+                });
+                
+                button.classList.add('active');
+                button.classList.remove('inactive');
+                
+                updateTopicDisplay(topicId);
+            });
+
+            createDonutChart();
+            updateTopicDisplay('topic1');
+        });
+    </script>
+</body>
+</html>
