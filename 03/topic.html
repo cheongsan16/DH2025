@@ -34,40 +34,57 @@
                 height: 400px;
             }
         }
-        .topic-btn {
-            @apply px-4 py-3 text-base text-center border-b-4 transition-all duration-200;
-        }
         
-        .topic-btn.inactive {
-            @apply border-transparent font-medium;
+        /* Base Button Style */
+        .topic-btn {
+            @apply px-6 py-3 text-base font-medium text-center transition-all duration-300 border-2 shadow-sm;
+        }
+        .topic-btn:hover {
+            @apply shadow-md transform -translate-y-0.5;
         }
 
+        /* Topic 1: Red - Square (직사각형) */
         .topic-btn[data-topic="topic1"] {
-            @apply text-red-600 hover:text-red-700;
+            @apply text-red-700 border-red-400 bg-red-50 rounded-none;
         }
         .topic-btn[data-topic="topic1"].active {
-            @apply border-red-600 text-red-700 font-bold bg-red-50;
+            @apply bg-red-600 text-white border-red-600 font-bold ring-2 ring-red-200 ring-offset-2;
+        }
+        .topic-btn[data-topic="topic1"].inactive:hover {
+             @apply bg-red-100 border-red-500;
         }
 
+        /* Topic 2: Blue - Rounded (둥근 사각형) */
         .topic-btn[data-topic="topic2"] {
-            @apply text-sky-600 hover:text-sky-700;
+            @apply text-blue-700 border-blue-400 bg-blue-50 rounded-xl;
         }
         .topic-btn[data-topic="topic2"].active {
-            @apply border-sky-600 text-sky-700 font-bold bg-sky-50;
+            @apply bg-blue-600 text-white border-blue-600 font-bold ring-2 ring-blue-200 ring-offset-2;
+        }
+        .topic-btn[data-topic="topic2"].inactive:hover {
+             @apply bg-blue-100 border-blue-500;
         }
 
+        /* Topic 3: Gray - Pill (알약 모양) */
         .topic-btn[data-topic="topic3"] {
-            @apply text-gray-600 hover:text-gray-700;
+            @apply text-gray-800 border-gray-400 bg-gray-100 rounded-full px-8;
         }
         .topic-btn[data-topic="topic3"].active {
-            @apply border-gray-600 text-gray-700 font-bold bg-gray-50;
+            @apply bg-gray-800 text-white border-gray-800 font-bold ring-2 ring-gray-300 ring-offset-2;
+        }
+        .topic-btn[data-topic="topic3"].inactive:hover {
+             @apply bg-gray-200 border-gray-500;
         }
 
+        /* Topic 4: Green - Leaf (나뭇잎 모양) */
         .topic-btn[data-topic="topic4"] {
-            @apply text-emerald-600 hover:text-emerald-700;
+            @apply text-emerald-700 border-emerald-400 bg-emerald-50 rounded-tl-2xl rounded-br-2xl rounded-tr-none rounded-bl-none;
         }
         .topic-btn[data-topic="topic4"].active {
-            @apply border-emerald-600 text-emerald-700 font-bold bg-emerald-50;
+            @apply bg-emerald-600 text-white border-emerald-600 font-bold ring-2 ring-emerald-200 ring-offset-2;
+        }
+        .topic-btn[data-topic="topic4"].inactive:hover {
+             @apply bg-emerald-100 border-emerald-500;
         }
     </style>
 </head>
@@ -129,11 +146,27 @@
                     관객 리뷰에서 도출된 4가지 주요 토픽입니다. 버튼을 클릭하여 각 토픽의 상세 요약, 주요 키워드 및 대표 인용 리뷰를 확인해 보세요.
                 </p>
 
-                <div class="border-b border-stone-300 mb-8">
-                    <div class="flex flex-wrap justify-center -mb-px gap-4" id="topic-selector">
+                <div class="mb-8">
+                    <div class="flex flex-wrap justify-center gap-4 items-center" id="topic-selector">
+                        <!-- Topic 1 Button -->
                         <button class="topic-btn active" data-topic="topic1">Topic 1: 세대교체/호스맨</button>
+                        
+                        <!-- Separator 1 -->
+                        <div class="hidden sm:block w-px h-8 bg-stone-300 mx-2"></div>
+                        
+                        <!-- Topic 2 Button -->
                         <button class="topic-btn inactive" data-topic="topic2">Topic 2: 전작과 비교</button>
+                        
+                        <!-- Separator 2 -->
+                        <div class="hidden sm:block w-px h-8 bg-stone-300 mx-2"></div>
+                        
+                        <!-- Topic 3 Button -->
                         <button class="topic-btn inactive" data-topic="topic3">Topic 3: 킬링타임</button>
+                        
+                        <!-- Separator 3 -->
+                        <div class="hidden sm:block w-px h-8 bg-stone-300 mx-2"></div>
+                        
+                        <!-- Topic 4 Button -->
                         <button class="topic-btn inactive" data-topic="topic4">Topic 4: 단순 긍정</button>
                     </div>
                 </div>
@@ -191,7 +224,7 @@
                 topic2: {
                     title: "Topic 2: 전작과의 비교 (스케일, 연출, 재미)",
                     sentiment: "부정적 / 중립적",
-                    sentimentColor: "text-sky-600",
+                    sentimentColor: "text-blue-600",
                     summary: "많은 리뷰가 1편과 2편을 직접 언급하며 3편과 비교합니다. 이 주제의 리뷰들은 대부분 3편의 마술 트릭 스케일이 더 작아졌고, 연출이 촌스러워졌으며, 1편만큼의 신선함이나 놀라움이 없다고 평가합니다.",
                     keywords: ["1편", "2편", "전작", "스케일", "트릭", "연출", "약해졌다", "허술했다"],
                     quotes: [
@@ -203,7 +236,7 @@
                 topic3: {
                     title: "Topic 3: '킬링타임용' 중립적 오락성",
                     sentiment: "중립적",
-                    sentimentColor: "text-gray-600",
+                    sentimentColor: "text-gray-800",
                     summary: "영화에 큰 기대를 하지 않았거나, 혹은 실망했지만 '시간 때우기' 용도로는 나쁘지 않았다고 평가하는 중립적 입장입니다. '쏘쏘', '볼만함', '그냥저냥' 등의 표현이 특징이며, 긍정/부정 토픽만큼 강한 의견을 표출하지 않습니다.",
                     keywords: ["킬링타임용", "볼만함", "그냥저냥", "기대 안 하고", "쏘쏘", "아쉬운"],
                     quotes: [
@@ -234,7 +267,7 @@
                     'Topic 2 (전작/스케일 비교)'
                 ],
                 percentages: [30, 30, 24, 16],
-                colors: ['#78716c', '#10b981', '#ef4444', '#0ea5e9']
+                colors: ['#78716c', '#10b981', '#ef4444', '#3b82f6']
             };
 
             function createDonutChart() {
