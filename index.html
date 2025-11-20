@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DH이해하기</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        @keyframes slideUp {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        .animate-fadeIn {
+            animation: fadeIn 0.2s ease-out forwards;
+        }
+        .animate-slideUp {
+            animation: slideUp 0.3s ease-out forwards;
+        }
+    </style>
+</head>
+<body class="min-h-screen bg-white font-sans text-gray-800 flex flex-col">
+
+    <!-- 헤더 섹션 -->
+    <header class="bg-white shadow-sm py-8 px-4 text-center border-b border-gray-100">
+        <h1 class="text-4xl font-extrabold text-gray-800 mb-2">DH 이해하기</h1>
+        <p class="text-gray-500 text-lg">디지털 인문학의 세계로 여러분을 초대합니다</p>
+    </header>
+
+    <!-- 메인 콘텐츠 -->
+    <main class="flex-grow container mx-auto px-4 py-12 flex items-center justify-center">
+        <div id="card-grid" class="grid grid-cols-1 md:grid-cols-2 gap-6 w-full max-w-4xl">
+            <!-- 자바스크립트로 카드가 여기에 렌더링됩니다 -->
+        </div>
+    </main>
+
+    <!-- 푸터 -->
+    <footer class="bg-white text-gray-500 py-6 text-center text-sm border-t border-gray-100">
+        &copy; 2024 DH Understanding Project. All rights reserved.
+    </footer>
+
+    <!-- 모달 (기본적으로 숨김) -->
+    <div id="modal-overlay" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm animate-fadeIn">
+        <div id="modal-container" class="bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden animate-slideUp">
+            <!-- 모달 헤더 -->
+            <div id="modal-header" class="p-6 border-b flex justify-between items-center bg-indigo-50">
+                <div class="flex items-center gap-3">
+                    <div id="modal-icon"></div>
+                    <div>
+                        <h3 id="modal-title" class="text-xl font-bold text-gray-900"></h3>
+                        <p id="modal-subtitle" class="text-sm text-gray-500"></p>
+                    </div>
+                </div>
+                <button id="modal-close-btn" class="p-2 hover:bg-indigo-100 rounded-full transition-colors">
+                    <i data-lucide="x" class="w-6 h-6 text-gray-500"></i>
+                </button>
+            </div>
+
+            <!-- 모달 콘텐츠 -->
+            <div id="modal-body" class="p-6">
+                <!-- 동적 콘텐츠가 여기에 들어갑니다 -->
+            </div>
+            
+            <!-- 모달 푸터 -->
+            <div class="p-4 border-t bg-gray-50 flex justify-end">
+                <button id="modal-footer-close-btn" class="px-5 py-2 bg-white border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-100 transition-colors font-medium">
+                    닫기
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 데이터 정의
+        const cards = [
+            {
+                id: 'dh',
+                title: '디지털인문학',
+                subtitle: 'Digital Humanities',
+                description: '인문학적 질문과 디지털 기술의 융합을 탐구합니다.',
+                iconName: 'book-open',
+                iconColorClass: 'text-indigo-500',
+                color: 'bg-indigo-50 hover:bg-indigo-100 border-indigo-200',
+                textColor: 'text-indigo-700',
+                action: 'modal',
+            },
+            {
+                id: 'ai-principle',
+                title: 'AI작동원리',
+                subtitle: 'How AI Works',
+                description: '인공지능의 기본 구조와 학습 알고리즘을 이해합니다.',
+                iconName: 'cpu',
+                iconColorClass: 'text-teal-500',
+                color: 'bg-teal-50 hover:bg-teal-100 border-teal-200',
+                textColor: 'text-teal-700',
+                action: 'link',
+                url: './02/index.html',
+            },
+            {
+                id: 'ai-text',
+                title: 'AI로보는텍스트',
+                subtitle: 'Text Analysis',
+                description: '대규모 텍스트 데이터를 AI를 통해 분석하고 시각화합니다.',
+                iconName: 'file-text',
+                iconColorClass: 'text-rose-500',
+                color: 'bg-rose-50 hover:bg-rose-100 border-rose-200',
+                textColor: 'text-rose-700',
+                action: 'link',
+                url: './03/index.html',
+            },
+            {
+                id: 'ai-ethics',
+                title: 'AI와윤리',
+                subtitle: 'AI Ethics',
+                description: '기술 발전 속에서 고려해야 할 윤리적 쟁점들을 다룹니다.',
+                iconName: 'scale',
+                iconColorClass: 'text-purple-500',
+                color: 'bg-purple-50 hover:bg-purple-100 border-purple-200',
+                textColor: 'text-purple-700',
+                action: 'link',
+                url: 'https://script.google.com/macros/s/AKfycbwnmZ2ieMxz39OObF6fcJezqKqUDsDmghAe39xI2TsCMX3wkiFtFpYrVw5iA8IjVY/exec',
+            },
+        ];
+
+        const dhLinks = [
+            { title: '디지털 인문학 보고서', url: 'https://gemini.google.com/share/a3d6a258b928', type: 'Report' },
+            { title: '디지털 인문학 웹페이지', url: 'https://gemini.google.com/share/bdb1977ac35b', type: 'Web' },
+            { title: '디지털 인문학 오디오 오버뷰', url: 'https://gemini.google.com/share/926cf15a7688', type: 'Audio' },
+            { title: '디지털 인문학 PPT', url: 'https://gemini.google.com/share/5a4e51e20978', type: 'Presentation' },
+        ];
+
+        // DOM 요소 참조
+        const cardGrid = document.getElementById('card-grid');
+        const modalOverlay = document.getElementById('modal-overlay');
+        const modalContainer = document.getElementById('modal-container');
+        const modalCloseBtn = document.getElementById('modal-close-btn');
+        const modalFooterCloseBtn = document.getElementById('modal-footer-close-btn');
+        
+        // 초기화 함수
+        function init() {
+            renderCards();
+            setupEventListeners();
+            lucide.createIcons();
+        }
+
+        // 카드 렌더링
+        function renderCards() {
+            cardGrid.innerHTML = cards.map(card => `
+                <button
+                    onclick="handleCardClick('${card.id}')"
+                    class="relative p-8 rounded-2xl border-2 transition-all duration-300 transform hover:-translate-y-1 hover:shadow-xl text-left flex flex-col h-64 justify-between group ${card.color}"
+                >
+                    <div class="absolute top-6 right-6 opacity-80 group-hover:opacity-100 transition-opacity group-hover:scale-110 duration-300">
+                        <i data-lucide="${card.iconName}" class="w-10 h-10 ${card.iconColorClass}"></i>
+                    </div>
+                    
+                    <div class="mt-4">
+                        <h2 class="text-2xl font-bold mb-1 ${card.textColor}">${card.title}</h2>
+                        <span class="text-sm font-medium opacity-70 uppercase tracking-wider">${card.subtitle}</span>
+                    </div>
+                    
+                    <div>
+                        <p class="text-gray-700 mb-4 line-clamp-2">${card.description}</p>
+                        <div class="flex items-center text-sm font-semibold ${card.textColor} opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                            ${card.action === 'modal' ? '자세히 보기' : '이동하기'} 
+                            <i data-lucide="chevron-right" class="w-4 h-4 ml-1"></i>
+                        </div>
+                    </div>
+                </button>
+            `).join('');
+        }
+
+        // 카드 클릭 핸들러 (전역 스코프에 노출)
+        window.handleCardClick = (cardId) => {
+            const card = cards.find(c => c.id === cardId);
+            if (!card) return;
+
+            if (card.action === 'modal') {
+                openModal(card);
+            } else if (card.action === 'link') {
+                window.open(card.url, '_blank');
+            }
+        };
+
+        // 모달 열기
+        function openModal(card) {
+            // 헤더 정보 업데이트
+            document.getElementById('modal-title').textContent = card.title;
+            document.getElementById('modal-subtitle').textContent = card.subtitle;
+            
+            const iconContainer = document.getElementById('modal-icon');
+            iconContainer.innerHTML = `<i data-lucide="${card.iconName}" class="w-10 h-10 ${card.iconColorClass}"></i>`;
+
+            // 본문 콘텐츠 업데이트
+            const modalBody = document.getElementById('modal-body');
+            
+            if (card.id === 'dh') {
+                const linksHtml = dhLinks.map(link => `
+                    <li>
+                        <a href="${link.url}" target="_blank" rel="noopener noreferrer"
+                           class="flex items-center p-4 rounded-xl border border-gray-200 hover:border-indigo-300 hover:bg-indigo-50 transition-all group">
+                            <div class="bg-indigo-100 p-2 rounded-lg mr-4 group-hover:bg-white transition-colors">
+                                <i data-lucide="external-link" class="w-5 h-5 text-indigo-600"></i>
+                            </div>
+                            <div class="flex-grow">
+                                <h4 class="font-semibold text-gray-800 group-hover:text-indigo-700">${link.title}</h4>
+                                <span class="text-xs text-gray-500">${link.type}</span>
+                            </div>
+                            <i data-lucide="chevron-right" class="w-5 h-5 text-gray-300 group-hover:text-indigo-500"></i>
+                        </a>
+                    </li>
+                `).join('');
+
+                modalBody.innerHTML = `
+                    <div class="space-y-4">
+                        <p class="text-gray-600 mb-4">디지털 인문학에 대한 심층적인 자료들을 확인해보세요.</p>
+                        <ul class="space-y-3">${linksHtml}</ul>
+                    </div>
+                `;
+            } else {
+                modalBody.innerHTML = `
+                    <div class="text-center py-12">
+                        <div class="bg-gray-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <i data-lucide="info" class="w-8 h-8 text-gray-400"></i>
+                        </div>
+                        <h4 class="text-lg font-semibold text-gray-800 mb-2">준비 중인 콘텐츠입니다</h4>
+                        <p class="text-gray-500">'${card.title}'에 대한 상세 내용은<br/>곧 업데이트될 예정입니다.</p>
+                    </div>
+                `;
+            }
+
+            // 모달 표시
+            modalOverlay.classList.remove('hidden');
+            
+            // 새로 추가된 아이콘 렌더링
+            lucide.createIcons();
+        }
+
+        // 모달 닫기
+        function closeModal() {
+            modalOverlay.classList.add('hidden');
+        }
+
+        // 이벤트 리스너 설정
+        function setupEventListeners() {
+            modalCloseBtn.addEventListener('click', closeModal);
+            modalFooterCloseBtn.addEventListener('click', closeModal);
+            
+            // 배경 클릭 시 닫기
+            modalOverlay.addEventListener('click', (e) => {
+                if (e.target === modalOverlay) {
+                    closeModal();
+                }
+            });
+        }
+
+        // 앱 시작
+        init();
+    </script>
+</body>
+</html>
