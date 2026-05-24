@@ -5,12 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>다지음 이천에 오신 것을 환영합니다</title>
     
-    <!-- Google Fonts: 전통적이면서도 세련된 느낌을 위해 Hahmlet과 Noto Sans KR 사용 -->
+    <!-- Google Fonts: 전통적인 서체 강조 -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Hahmlet:wght@300;400;500;600;700&family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Hahmlet:wght@300;400;500;600;700&family=Noto+Serif+KR:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
-    <!-- FontAwesome for Icons -->
+    <!-- FontAwesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <!-- Tailwind CSS -->
@@ -20,13 +20,22 @@
             theme: {
                 extend: {
                     fontFamily: {
-                        sans: ['"Noto Sans KR"', 'sans-serif'],
-                        serif: ['"Hahmlet"', 'serif'],
+                        sans: ['"Hahmlet"', 'serif'],
+                        serif: ['"Noto Serif KR"', 'serif'],
                     },
                     colors: {
-                        dablue: '#1e3a8a', // Deep blue
-                        dagold: '#b45309', // Deep amber/gold
-                        dabg: '#f8fafc',
+                        trad: {
+                            red: '#6b1c1c',     
+                            darkred: '#4a1010', 
+                            gold: '#b47b2b',    
+                            bg: '#f4f1ea',      
+                            ink: '#2a2420',     
+                            border: '#d1c7b8'   
+                        }
+                    },
+                    backgroundImage: {
+                        'paper': "url('https://www.transparenttextures.com/patterns/rice-paper.png')",
+                        'stardust': "url('https://www.transparenttextures.com/patterns/stardust.png')"
                     }
                 }
             }
@@ -34,417 +43,526 @@
     </script>
     <style>
         body {
-            background-color: #f8fafc;
-            color: #334155;
+            background-color: #f4f1ea;
+            color: #2a2420;
             word-break: keep-all;
+            -webkit-tap-highlight-color: transparent;
+            position: relative;
         }
-        .text-gradient {
-            background: linear-gradient(to right, #b45309, #d97706);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+        /* 전역 종이 텍스처 오버레이 */
+        body::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            background-image: url('https://www.transparenttextures.com/patterns/rice-paper.png');
+            opacity: 0.6;
+            pointer-events: none;
+            z-index: 50;
         }
+        /* 전통적인 테두리 장식 */
+        .trad-border {
+            border: 1px solid #d1c7b8;
+            position: relative;
+        }
+        .trad-border::before, .trad-border::after {
+            content: '';
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            border: 1px solid #6b1c1c;
+        }
+        .trad-border::before { top: -4px; left: -4px; border-right: none; border-bottom: none; }
+        .trad-border::after { bottom: -4px; right: -4px; border-left: none; border-top: none; }
+        
+        .trad-border-inner::before, .trad-border-inner::after {
+            content: '';
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            border: 1px solid #b47b2b; /* 내부 테두리는 골드로 변경하여 더 화사하게 */
+        }
+        .trad-border-inner::before { top: -4px; right: -4px; border-left: none; border-bottom: none; }
+        .trad-border-inner::after { bottom: -4px; left: -4px; border-right: none; border-top: none; }
+
+        /* 세로쓰기 포인트용 */
+        .vertical-rl {
+            writing-mode: vertical-rl;
+            text-orientation: upright;
+        }
+        
+        /* 부드러운 스크롤 애니메이션 최적화 */
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px); /* 모바일에서 너무 부담스럽지 않게 거리 축소 */
+            transition: opacity 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94), 
+                        transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .delay-100 { transition-delay: 100ms; }
+        .delay-200 { transition-delay: 200ms; }
+        .delay-300 { transition-delay: 300ms; }
+        .delay-400 { transition-delay: 400ms; }
     </style>
 </head>
-<body class="font-sans antialiased selection:bg-dagold selection:text-white">
+<body class="font-sans antialiased selection:bg-trad-red selection:text-white pb-24 md:pb-0">
 
     <!-- Navigation -->
-    <nav class="bg-white/90 backdrop-blur-md fixed w-full z-50 top-0 border-b border-gray-100 shadow-sm">
-        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between h-20 items-center">
-                <div class="flex-shrink-0 flex items-center gap-2">
-                    <i class="fa-solid fa-leaf text-dagold text-2xl"></i>
-                    <span class="font-serif font-bold text-2xl text-dablue">다지음<span class="text-gray-500 font-sans font-light text-lg ml-1">이천</span></span>
+    <nav class="bg-[#e9e4d9]/90 backdrop-blur-sm sticky top-0 w-full z-40 border-b border-trad-border shadow-sm">
+        <div class="max-w-5xl mx-auto px-4 md:px-8 relative">
+            <div class="flex justify-between h-16 md:h-20 items-center">
+                <div class="flex items-center gap-2">
+                    <span class="text-trad-red text-xl md:text-2xl opacity-80"><i class="fa-solid fa-yin-yang"></i></span>
+                    <span class="font-serif font-bold text-xl md:text-2xl text-trad-ink tracking-widest">
+                        다지음<span class="text-trad-red text-lg md:text-xl ml-1 font-medium">이천</span>
+                    </span>
                 </div>
-                <div class="hidden sm:flex items-center gap-4">
-                    <div class="text-right">
-                        <p class="text-xs text-gray-500">지사장 한강나</p>
-                        <p class="font-bold text-dablue"><i class="fa-solid fa-phone text-dagold mr-1"></i> 0504-4645-7481</p>
-                    </div>
+                <div class="hidden md:flex items-center gap-4">
+                    <p class="text-sm font-medium text-trad-ink/80">지사장 한강나</p>
+                    <div class="w-px h-4 bg-trad-border"></div>
+                    <a href="tel:0504-4645-7481" class="font-bold text-trad-red tracking-wide flex items-center gap-2 hover:opacity-70 transition-opacity">
+                        <i class="fa-solid fa-phone"></i> 0504-4645-7481
+                    </a>
                 </div>
             </div>
+            <!-- 하단 붉은 띠 -->
+            <div class="absolute bottom-0 left-0 w-full h-0.5 bg-gradient-to-r from-transparent via-trad-red to-transparent opacity-30"></div>
         </div>
     </nav>
 
     <!-- Hero Section -->
-    <header class="relative bg-dablue pt-32 pb-20 lg:pt-48 lg:pb-32 overflow-hidden">
-        <div class="absolute inset-0 opacity-10 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')]"></div>
-        <div class="absolute top-0 right-0 -mt-20 -mr-20 w-80 h-80 bg-dagold rounded-full blur-3xl opacity-20"></div>
-        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
-            <p class="text-dagold font-semibold tracking-widest mb-4">한글구성성명학의 지혜</p>
-            <h1 class="font-serif text-4xl sm:text-5xl lg:text-6xl font-bold text-white leading-tight mb-6">
-                다지음 이천에 오신 것을<br>환영합니다
+    <section class="relative bg-trad-red text-[#f4f1ea] pt-24 pb-20 md:pt-32 md:pb-28 border-b-8 border-trad-darkred overflow-hidden">
+        <div class="absolute inset-0 bg-paper opacity-30 mix-blend-multiply"></div>
+        <div class="absolute inset-0 bg-stardust opacity-10"></div>
+        
+        <div class="max-w-4xl mx-auto px-4 md:px-8 relative z-10 text-center reveal">
+            <div class="inline-flex flex-col items-center mb-8">
+                <div class="w-px h-12 bg-trad-gold/50 mb-4"></div>
+                <span class="text-trad-gold font-serif tracking-[0.3em] text-sm md:text-base">한글구성성명학의 지혜</span>
+            </div>
+            
+            <h1 class="font-serif text-3xl md:text-5xl lg:text-6xl font-bold leading-[1.4] md:leading-[1.3] mb-8 tracking-tight text-[#fdfcf9] drop-shadow-md">
+                다지음 이천에 오신 것을<br class="hidden md:block"> 환영합니다
             </h1>
-            <p class="text-lg sm:text-xl text-blue-100 max-w-2xl mx-auto font-light">
-                사주팔자와 운명이란 무엇인가?<br>이름은 운명을 개척하는 열쇠입니다.
+            
+            <p class="text-lg md:text-xl text-[#e9e4d9] max-w-xl mx-auto font-light leading-loose break-keep">
+                <strong class="text-trad-gold font-medium text-xl">사주팔자와 운명이란 무엇인가?</strong><br>
+                이름은 운명을 개척하는 열쇠입니다.
             </p>
-            <div class="mt-10 sm:hidden">
-                <a href="tel:0504-4645-7481" class="inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-full text-dablue bg-white hover:bg-gray-50 transition shadow-lg">
-                    <i class="fa-solid fa-phone mr-2 text-dagold"></i> 전화 상담하기
-                </a>
+        </div>
+        
+        <!-- 전통 문양 느낌의 장식 -->
+        <div class="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2 w-32 h-32 rounded-full border-4 border-trad-darkred flex items-center justify-center bg-trad-red">
+            <div class="w-24 h-24 rounded-full border border-trad-gold/30 flex items-center justify-center">
+                <i class="fa-solid fa-seedling text-trad-gold text-3xl opacity-80"></i>
             </div>
         </div>
-    </header>
+    </section>
 
     <!-- Section 1: 운명과 숙명 -->
-    <section class="py-20 bg-white">
-        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center mb-16">
-                <h2 class="font-serif text-3xl md:text-4xl font-bold text-gray-900 mb-4">운명과 숙명의 차이</h2>
-                <div class="w-16 h-1 bg-dagold mx-auto rounded"></div>
+    <section class="py-24 md:py-32 relative">
+        <div class="max-w-5xl mx-auto px-4 md:px-8">
+            <div class="text-center mb-16 reveal">
+                <h2 class="font-serif text-3xl md:text-4xl font-bold text-trad-ink tracking-wide">운명과 숙명의 차이</h2>
+                <div class="w-12 h-1 bg-trad-red mx-auto mt-6"></div>
             </div>
 
-            <div class="grid md:grid-cols-2 gap-12 items-center">
-                <div class="space-y-6">
-                    <div class="bg-slate-50 p-6 rounded-2xl border border-slate-100 shadow-sm">
-                        <h3 class="text-xl font-bold text-dablue mb-3 flex items-center gap-2">
-                            <i class="fa-solid fa-lock text-gray-400"></i> 타고난 운명 (숙명의 틀)
+            <div class="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+                <div class="space-y-10 reveal">
+                    <!-- 타고난 운명 -->
+                    <div class="relative pl-8 md:pl-10">
+                        <div class="absolute top-0 left-0 w-1 h-full bg-trad-border"></div>
+                        <div class="absolute top-0 left-0 w-1 h-1/3 bg-trad-red"></div>
+                        <h3 class="text-xl font-bold text-trad-ink mb-3 font-serif flex items-center gap-3">
+                            타고난 운명, 숙명의 틀
                         </h3>
-                        <p class="text-gray-600 leading-relaxed">
-                            타고난 팔자에 의해 우리의 운명은 이미 정해진 그 틀에 맞춰 살아가게 됩니다. 사주팔자가 정해지면 그 팔자는 바꿀 수 없으며, 이것을 우리는 <strong class="text-gray-900">숙명</strong>이라 합니다.
+                        <p class="text-trad-ink/80 text-base md:text-lg leading-loose break-keep">
+                            타고난 팔자에 의해 우리의 운명은 이미 정해진 그 틀에 맞춰 살아가게 됩니다. 사주팔자가 정해지면 그 팔자는 바꿀 수 없으며, 이것을 우리는 <strong class="text-trad-red font-semibold">숙명</strong>이라 합니다.
                         </p>
                     </div>
                     
-                    <div class="bg-blue-50 p-6 rounded-2xl border border-blue-100 shadow-sm relative overflow-hidden">
-                        <div class="absolute top-0 right-0 p-4 opacity-10 text-5xl"><i class="fa-solid fa-key"></i></div>
-                        <h3 class="text-xl font-bold text-dablue mb-3 flex items-center gap-2">
-                            <i class="fa-solid fa-door-open text-dagold"></i> 개운(開運)과 이름의 힘
+                    <!-- 왜 성명학인가 -->
+                    <div class="relative pl-8 md:pl-10 reveal delay-100">
+                        <div class="absolute top-0 left-0 w-1 h-full bg-trad-border"></div>
+                        <div class="absolute top-0 left-0 w-1 h-1/3 bg-trad-gold"></div>
+                        <h3 class="text-xl font-bold text-trad-ink mb-3 font-serif">
+                            왜 성명학인가?
                         </h3>
-                        <p class="text-gray-600 leading-relaxed mb-4">
-                            주어진 운명대로만 살아간다면 인간의 노력은 아무런 의미가 없게 됩니다. 그러나 우리의 노력 여하에 따라 길흉이 엇갈리게 되는 <strong class="text-dablue">한글구성성명학</strong>이 있습니다.
+                        <p class="text-trad-ink/80 text-base md:text-lg leading-loose break-keep mb-3">
+                            주어진 운명대로만 살아간다면 인간의 노력은 아무런 의미가 없게 됩니다. 그러나 우리의 노력 여하에 따라 길흉이 엇갈리게 되는 한글구성성명학이 있습니다.
                         </p>
-                        <p class="text-gray-600 leading-relaxed font-medium">
+                        <p class="text-trad-ink/80 text-base md:text-lg leading-loose break-keep font-medium text-trad-red">
                             이름은 우리가 운전해 나가는 방향에 따라 불변의 숙명도 어느 정도 개운이 가능하다는 묵시적 암시를 줍니다.
                         </p>
                     </div>
                 </div>
 
-                <div class="w-full rounded-3xl overflow-hidden shadow-2xl border border-gray-100 bg-white p-4 sm:p-8 hover:scale-105 transition-transform duration-700">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 300" class="w-full h-auto">
-                        <defs>
-                            <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-                                <stop offset="0%" style="stop-color:#f8fafc;stop-opacity:1" />
-                                <stop offset="50%" style="stop-color:#eff6ff;stop-opacity:1" />
-                                <stop offset="100%" style="stop-color:#fffbeb;stop-opacity:1" />
-                            </linearGradient>
-                        </defs>
-                        <rect width="800" height="300" rx="24" fill="url(#bgGrad)" />
-
-                        <!-- Path Line -->
-                        <path d="M 150,180 C 250,180 300,150 400,150 C 500,150 550,180 650,180" fill="none" stroke="#b45309" stroke-width="4" stroke-dasharray="8,8" opacity="0.6"/>
-
-                        <!-- 1. 숙명 (Destiny) - Mountain & Lock -->
-                        <g transform="translate(100, 80)">
-                            <!-- Mountains -->
-                            <path d="M-40,120 L20,30 L80,120" fill="#e2e8f0" stroke="#1e3a8a" stroke-width="5" stroke-linejoin="round"/>
-                            <path d="M10,120 L60,50 L110,120" fill="#cbd5e1" stroke="#1e3a8a" stroke-width="5" stroke-linejoin="round"/>
-                            <!-- Lock -->
-                            <rect x="20" y="80" width="30" height="24" rx="4" fill="#ffffff" stroke="#1e3a8a" stroke-width="4"/>
-                            <path d="M26,80 V68 A9,9 0 0,1 44,68 V80" fill="none" stroke="#1e3a8a" stroke-width="4"/>
-                            <circle cx="35" cy="92" r="3" fill="#b45309"/>
+                <!-- 낡은 종이/철학관 느낌의 일러스트 프레임 -->
+                <div class="w-full bg-[#fcfaf7] p-4 md:p-6 shadow-md border border-[#e5dfd3] relative reveal delay-200">
+                    <div class="absolute inset-2 border border-[#d1c7b8] pointer-events-none"></div>
+                    <div class="absolute top-0 left-0 w-4 h-4 border-t-2 border-l-2 border-trad-red"></div>
+                    <div class="absolute top-0 right-0 w-4 h-4 border-t-2 border-r-2 border-trad-red"></div>
+                    <div class="absolute bottom-0 left-0 w-4 h-4 border-b-2 border-l-2 border-trad-red"></div>
+                    <div class="absolute bottom-0 right-0 w-4 h-4 border-b-2 border-r-2 border-trad-red"></div>
+                    
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 350" class="w-full h-auto opacity-90">
+                        <rect width="800" height="350" fill="#fcfaf7" />
+                        <path d="M 100,200 C 250,200 300,160 400,160 C 500,160 550,200 700,200" fill="none" stroke="#d1c7b8" stroke-width="3" stroke-dasharray="10,10" />
+                        <g transform="translate(150, 100)">
+                            <path d="M-60,150 L0,50 L60,150 Z" fill="none" stroke="#2a2420" stroke-width="4" stroke-linejoin="round"/>
+                            <path d="M-20,150 L30,70 L80,150 Z" fill="none" stroke="#2a2420" stroke-width="4" stroke-linejoin="round"/>
+                            <path d="M0,50 L20,80 M30,70 L45,95" fill="none" stroke="#2a2420" stroke-width="2"/>
+                            <rect x="-15" y="110" width="30" height="25" rx="2" fill="#fcfaf7" stroke="#6b1c1c" stroke-width="3"/>
+                            <path d="M-8,110 V95 A8,8 0 0,1 8,95 V110" fill="none" stroke="#6b1c1c" stroke-width="3"/>
+                            <circle cx="0" cy="122" r="2" fill="#6b1c1c"/>
+                            <text x="0" y="40" font-family="'Hahmlet', serif" font-size="18" fill="#6b1c1c" text-anchor="middle" font-weight="bold">숙 명</text>
                         </g>
-
-                        <!-- 2. 나침반 (Compass) -->
-                        <g transform="translate(400, 150)">
-                            <circle cx="0" cy="0" r="60" fill="#ffffff" stroke="#1e3a8a" stroke-width="5"/>
-                            <circle cx="0" cy="0" r="50" fill="none" stroke="#bfdbfe" stroke-width="2" stroke-dasharray="6,4"/>
-                            <circle cx="0" cy="0" r="40" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1"/>
-                            <!-- Compass Star -->
-                            <path d="M0,-35 L10,0 L0,35 L-10,0 Z" fill="#ffffff" stroke="#1e3a8a" stroke-width="3" stroke-linejoin="round"/>
-                            <path d="M-35,0 L0,10 L35,0 L0,-10 Z" fill="#ffffff" stroke="#1e3a8a" stroke-width="3" stroke-linejoin="round"/>
-                            <!-- North pointer highlight -->
-                            <path d="M0,-35 L10,0 L0,0 Z" fill="#b45309"/>
-                            <circle cx="0" cy="0" r="6" fill="#1e3a8a"/>
+                        <g transform="translate(400, 160)">
+                            <circle cx="0" cy="0" r="75" fill="none" stroke="#2a2420" stroke-width="2"/>
+                            <circle cx="0" cy="0" r="65" fill="#f4f1ea" stroke="#2a2420" stroke-width="4"/>
+                            <circle cx="0" cy="0" r="50" fill="none" stroke="#b47b2b" stroke-width="1" stroke-dasharray="4,4"/>
+                            <path d="M0,-45 L12,0 L0,45 L-12,0 Z" fill="#fcfaf7" stroke="#2a2420" stroke-width="3" stroke-linejoin="round"/>
+                            <path d="M-45,0 L0,12 L45,0 L0,-12 Z" fill="#fcfaf7" stroke="#2a2420" stroke-width="3" stroke-linejoin="round"/>
+                            <path d="M0,-45 L12,0 L0,0 Z" fill="#6b1c1c"/>
+                            <circle cx="0" cy="0" r="5" fill="#2a2420"/>
+                            <text x="-35" y="-35" font-family="'Hahmlet', serif" font-size="16" fill="#2a2420">ㄱ</text>
+                            <text x="30" y="-30" font-family="'Hahmlet', serif" font-size="18" fill="#b47b2b">ㅇ</text>
+                            <text x="-40" y="40" font-family="'Hahmlet', serif" font-size="14" fill="#6b1c1c">ㅎ</text>
+                            <text x="25" y="45" font-family="'Hahmlet', serif" font-size="16" fill="#2a2420">ㄹ</text>
                         </g>
-
-                        <!-- 3. 개운의 열쇠 (Key & Sun) -->
-                        <g transform="translate(700, 150)">
-                            <!-- Sun/Portal -->
-                            <circle cx="0" cy="0" r="50" fill="#fef3c7" stroke="#b45309" stroke-width="4" stroke-dasharray="12,6"/>
-                            <!-- Key -->
-                            <g transform="rotate(-30 0 0)">
-                                <circle cx="-30" cy="0" r="16" fill="#ffffff" stroke="#1e3a8a" stroke-width="5"/>
-                                <circle cx="-30" cy="0" r="6" fill="#1e3a8a" />
-                                <path d="M-14,0 L40,0" fill="none" stroke="#1e3a8a" stroke-width="5" stroke-linecap="round"/>
-                                <path d="M20,0 V15 M35,0 V15" fill="none" stroke="#1e3a8a" stroke-width="5" stroke-linecap="round"/>
+                        <g transform="translate(650, 160)">
+                            <circle cx="0" cy="0" r="55" fill="none" stroke="#6b1c1c" stroke-width="2" stroke-dasharray="8,4"/>
+                            <circle cx="0" cy="0" r="45" fill="#f4f1ea" stroke="#6b1c1c" stroke-width="1"/>
+                            <g transform="rotate(-45 0 0)">
+                                <circle cx="-25" cy="0" r="14" fill="#fcfaf7" stroke="#2a2420" stroke-width="4"/>
+                                <path d="M-11,0 L35,0" fill="none" stroke="#2a2420" stroke-width="4" stroke-linecap="round"/>
+                                <path d="M15,0 V12 M28,0 V12" fill="none" stroke="#2a2420" stroke-width="4" stroke-linecap="round"/>
                             </g>
+                            <text x="0" y="90" font-family="'Hahmlet', serif" font-size="18" fill="#6b1c1c" text-anchor="middle" font-weight="bold">개 운</text>
                         </g>
                     </svg>
                 </div>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-16">
-                <div class="bg-white p-6 rounded-2xl shadow-lg border border-gray-100 text-center hover:-translate-y-1 transition duration-300">
-                    <div class="w-12 h-12 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4 text-slate-500 text-xl">
-                        <i class="fa-solid fa-mountain"></i>
-                    </div>
-                    <h4 class="font-bold text-lg mb-2">숙명</h4>
-                    <p class="text-sm text-gray-500">바꿀 수 없는 것<br>그 자체로는 변하지 않습니다</p>
+            <!-- 이름의 중요성 (3개 카드) -->
+            <div class="grid md:grid-cols-3 gap-6 mt-16">
+                <div class="bg-[#fdfcf9] border border-[#d1c7b8] p-6 md:p-8 text-center shadow-sm reveal delay-100">
+                    <h4 class="font-serif text-xl font-bold text-trad-ink mb-2">숙명</h4>
+                    <p class="text-sm font-medium text-trad-red mb-4">바꿀 수 없는 것</p>
+                    <p class="text-trad-ink/80 text-sm leading-relaxed break-keep">
+                        사주팔자로 정해진 타고난 운명의 틀. 그 자체로는 변하지 않습니다.
+                    </p>
                 </div>
-                <div class="bg-white p-6 rounded-2xl shadow-lg border border-gray-100 text-center hover:-translate-y-1 transition duration-300">
-                    <div class="w-12 h-12 bg-amber-50 rounded-full flex items-center justify-center mx-auto mb-4 text-dagold text-xl">
-                        <i class="fa-solid fa-key"></i>
-                    </div>
-                    <h4 class="font-bold text-lg mb-2">이름</h4>
-                    <p class="text-sm text-gray-500">개운의 열쇠<br>길한 방향으로 이끌어갑니다</p>
+                <div class="bg-[#fdfcf9] border border-[#d1c7b8] p-6 md:p-8 text-center shadow-sm reveal delay-200">
+                    <h4 class="font-serif text-xl font-bold text-trad-ink mb-2">이름</h4>
+                    <p class="text-sm font-medium text-trad-gold mb-4">개운의 열쇠</p>
+                    <p class="text-trad-ink/80 text-sm leading-relaxed break-keep">
+                        올바른 이름 하나로 숙명 안에서도 길한 방향으로 삶을 이끌어갈 수 있습니다.
+                    </p>
                 </div>
-                <div class="bg-white p-6 rounded-2xl shadow-lg border border-gray-100 text-center hover:-translate-y-1 transition duration-300">
-                    <div class="w-12 h-12 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-4 text-dablue text-xl">
-                        <i class="fa-solid fa-compass"></i>
-                    </div>
-                    <h4 class="font-bold text-lg mb-2">취길피흉(取吉避凶)</h4>
-                    <p class="text-sm text-gray-500">삶의 길잡이<br>운명을 개척하는 지혜입니다</p>
+                <div class="bg-[#fdfcf9] border border-[#d1c7b8] p-6 md:p-8 text-center shadow-sm reveal delay-300">
+                    <h4 class="font-serif text-xl font-bold text-trad-ink mb-2">취길피흉</h4>
+                    <p class="text-sm font-medium text-trad-red mb-4">삶의 길잡이</p>
+                    <p class="text-trad-ink/80 text-sm leading-relaxed break-keep">
+                        한글성명학은 취길피흉(取吉避凶)으로 운명을 개척해 나가는 실천적 지혜입니다.
+                    </p>
                 </div>
             </div>
 
-            <div class="mt-16 bg-slate-900 text-white rounded-3xl p-8 md:p-12 text-center shadow-xl">
-                <i class="fa-solid fa-quote-left text-3xl text-slate-600 mb-6"></i>
-                <p class="font-serif text-xl md:text-2xl leading-relaxed mb-6">
-                    "운명의 현실은 분명합니다. 숙명은 바꿀 수 없지만, <br class="hidden md:block">
-                    이름을 통해 그 안에서 <span class="text-dagold font-bold">길한 기운을 취하고 흉한 기운을 피하는 것</span>은 가능합니다."
+            <!-- 인용구 -->
+            <div class="mt-16 py-12 px-6 md:px-12 bg-[#e9e4d9] border-y-2 border-trad-border text-center relative reveal">
+                <i class="fa-solid fa-quote-left text-3xl text-trad-border absolute top-6 left-6 md:left-12"></i>
+                <i class="fa-solid fa-quote-right text-3xl text-trad-border absolute bottom-6 right-6 md:right-12"></i>
+                <p class="font-serif text-xl md:text-2xl leading-[1.8] text-trad-ink font-medium max-w-3xl mx-auto break-keep mb-4">
+                    "운명의 현실은 분명합니다. 숙명은 바꿀 수 없지만,<br class="hidden md:block">
+                    이름을 통해 그 안에서 <span class="text-trad-red">길한 기운을 취하고 흉한 기운을 피하는 것</span>은 가능합니다."
                 </p>
-                <p class="text-slate-400 font-light">다지음의 한글구성성명학은 삶의 방향을 올바르게 설정하여 더 나은 운명을 개척하도록 돕는 길잡이가 됩니다.</p>
+                <p class="text-trad-ink/70 mt-4">다지음의 한글구성성명학은 삶의 방향을 올바르게 설정하여 더 나은 운명을 개척하도록 돕는 길잡이가 됩니다.</p>
             </div>
         </div>
     </section>
 
     <!-- Section 2: 핵심 원리 -->
-    <section class="py-20 bg-slate-50">
-        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center mb-16">
-                <h2 class="font-serif text-3xl md:text-4xl font-bold text-gray-900 mb-4">다지음 한글구성성명학의 핵심 원리</h2>
-                <p class="text-gray-600 max-w-2xl mx-auto">단순한 이름 풀이가 아닙니다. 숙명의 틀 안에서도 노력과 올바른 방향 설정을 통해 삶의 질을 높일 수 있습니다.</p>
+    <section class="py-20 md:py-28 border-t border-trad-border/50">
+        <div class="max-w-5xl mx-auto px-4 md:px-8">
+            <div class="flex flex-col items-center mb-16 reveal">
+                <p class="text-trad-red font-medium mb-2 tracking-widest text-sm">한글구성성명학</p>
+                <h2 class="font-serif text-3xl md:text-4xl font-bold text-trad-ink tracking-wide">핵심 원리 4단계</h2>
             </div>
 
-            <div class="grid md:grid-cols-4 gap-8">
-                <!-- Step 1 -->
-                <div class="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 relative pt-12">
-                    <div class="absolute -top-6 left-1/2 -translate-x-1/2 w-12 h-12 bg-dablue text-white rounded-full flex items-center justify-center font-bold text-xl shadow-lg">1</div>
-                    <h3 class="text-lg font-bold text-center mb-4">사주팔자 분석</h3>
-                    <p class="text-gray-600 text-sm text-center leading-relaxed">타고난 생년월일시를 바탕으로 개인의 운명적 틀과 숙명적 특성을 객관적으로 파악합니다.</p>
+            <div class="grid md:grid-cols-2 gap-x-12 gap-y-10 relative mb-16">
+                <!-- 가운데 장식선 (PC) -->
+                <div class="hidden md:block absolute top-0 bottom-0 left-1/2 w-px bg-trad-border border-dashed border-l"></div>
+
+                <!-- Step 1-4 -->
+                <div class="flex gap-6 items-start group reveal">
+                    <div class="text-4xl md:text-5xl font-serif font-bold text-trad-gold/30 pt-1 group-hover:text-trad-red transition-colors duration-500">一</div>
+                    <div>
+                        <h3 class="text-xl font-bold text-trad-ink mb-3 font-serif">사주팔자 분석</h3>
+                        <p class="text-trad-ink/80 leading-relaxed break-keep">타고난 생년월일시를 바탕으로 개인의 운명적 틀과 숙명적 특성을 객관적으로 파악합니다.</p>
+                    </div>
                 </div>
-                <!-- Step 2 -->
-                <div class="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 relative pt-12">
-                    <div class="absolute -top-6 left-1/2 -translate-x-1/2 w-12 h-12 bg-dablue text-white rounded-full flex items-center justify-center font-bold text-xl shadow-lg">2</div>
-                    <h3 class="text-lg font-bold text-center mb-4">한글 구성 원리</h3>
-                    <p class="text-gray-600 text-sm text-center leading-relaxed">한글의 자음과 모음이 지닌 고유한 에너지와 기운을 분석하여 이름의 길흉을 판단합니다.</p>
+                <div class="flex gap-6 items-start group reveal delay-100">
+                    <div class="text-4xl md:text-5xl font-serif font-bold text-trad-gold/30 pt-1 group-hover:text-trad-red transition-colors duration-500">二</div>
+                    <div>
+                        <h3 class="text-xl font-bold text-trad-ink mb-3 font-serif">한글 구성 원리</h3>
+                        <p class="text-trad-ink/80 leading-relaxed break-keep">한글의 자음과 모음이 지닌 고유한 에너지와 기운을 분석하여 이름의 길흉을 판단합니다.</p>
+                    </div>
                 </div>
-                <!-- Step 3 -->
-                <div class="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 relative pt-12">
-                    <div class="absolute -top-6 left-1/2 -translate-x-1/2 w-12 h-12 bg-dablue text-white rounded-full flex items-center justify-center font-bold text-xl shadow-lg">3</div>
-                    <h3 class="text-lg font-bold text-center mb-4">길흉 판단</h3>
-                    <p class="text-gray-600 text-sm text-center leading-relaxed">이름을 구성하는 글자들의 조합이 삶의 길흉에 어떤 영향을 미치는지 명확히 분석합니다.</p>
+                <div class="flex gap-6 items-start group reveal delay-200">
+                    <div class="text-4xl md:text-5xl font-serif font-bold text-trad-gold/30 pt-1 group-hover:text-trad-red transition-colors duration-500">三</div>
+                    <div>
+                        <h3 class="text-xl font-bold text-trad-ink mb-3 font-serif">길흉 판단</h3>
+                        <p class="text-trad-ink/80 leading-relaxed break-keep">이름을 구성하는 글자들의 조합이 삶의 길흉에 어떤 영향을 미치는지 명확히 분석합니다.</p>
+                    </div>
                 </div>
-                <!-- Step 4 -->
-                <div class="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 relative pt-12">
-                    <div class="absolute -top-6 left-1/2 -translate-x-1/2 w-12 h-12 bg-dablue text-white rounded-full flex items-center justify-center font-bold text-xl shadow-lg">4</div>
-                    <h3 class="text-lg font-bold text-center mb-4">개운 방향 제시</h3>
-                    <p class="text-gray-600 text-sm text-center leading-relaxed">취길피흉의 원칙에 따라 삶의 방향을 올바르게 설정하는 이름과 실천 방법을 안내합니다.</p>
+                <div class="flex gap-6 items-start group reveal delay-300">
+                    <div class="text-4xl md:text-5xl font-serif font-bold text-trad-gold/30 pt-1 group-hover:text-trad-red transition-colors duration-500">四</div>
+                    <div>
+                        <h3 class="text-xl font-bold text-trad-red mb-3 font-serif">개운 방향 제시</h3>
+                        <p class="text-trad-ink/80 leading-relaxed break-keep">취길피흉의 원칙에 따라 삶의 방향을 올바르게 설정하는 이름과 실천 방법을 안내합니다.</p>
+                    </div>
                 </div>
             </div>
 
-            <div class="mt-12 text-center">
-                <p class="inline-block border-b-2 border-dagold pb-1 font-serif text-xl text-dablue italic">
-                    "이름은 운명을 담는 그릇이며, 올바른 이름은 삶을 길한 방향으로 이끄는 나침반입니다."
+            <!-- 핵심 원리 결론 -->
+            <div class="text-center reveal max-w-3xl mx-auto">
+                <p class="text-trad-ink/90 leading-loose break-keep mb-8">
+                    다지음의 한글구성성명학은 단순한 이름 풀이가 아닙니다.<br>
+                    숙명의 틀 안에서도 노력과 올바른 방향 설정을 통해 삶의 질을 높일 수 있다는 믿음 아래, 모든 분석은 <strong class="text-trad-red">실질적인 개운(開運)</strong>으로 이어집니다.
                 </p>
+                <div class="inline-block border-b-2 border-trad-gold pb-2 font-serif text-xl md:text-2xl text-trad-ink font-bold">
+                    "이름은 운명을 담는 그릇이며, 올바른 이름은 삶을 길한 방향으로 이끄는 나침반입니다."
+                </div>
             </div>
         </div>
     </section>
 
-    <!-- Section 3: 분석 구성요소 & 차이점 -->
-    <section class="py-20 bg-white">
-        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="grid lg:grid-cols-2 gap-16">
+    <!-- Section 3: 분석 구성요소 및 현대 성명학과 차별점 (어두운 배경 -> 밝은 배경으로 수정됨) -->
+    <section class="py-24 bg-[#fcfaf7] text-trad-ink border-y-8 border-trad-darkred relative overflow-hidden">
+        <div class="absolute inset-0 bg-paper opacity-30 mix-blend-multiply"></div>
+        <div class="max-w-5xl mx-auto px-4 md:px-8 relative z-10">
+            
+            <!-- 한글성명학 분석의 구성 요소 -->
+            <div class="mb-20">
+                <div class="reveal">
+                    <h2 class="font-serif text-3xl font-bold mb-6 text-trad-ink text-center">한글성명학 분석의 구성 요소</h2>
+                    <p class="text-trad-ink/80 text-center mb-12 font-light break-keep">
+                        효과적인 성명 분석은 여러 핵심 요소들의 균형 잡힌 조합으로 이루어집니다.<br class="hidden md:block">
+                        각 요소가 어떻게 이름의 길흉에 영향을 미치는지 이해하는 것이 중요합니다.
+                    </p>
+                </div>
                 
-                <!-- 분석의 구성 요소 -->
-                <div>
-                    <h2 class="font-serif text-3xl font-bold text-gray-900 mb-6">한글성명학 분석의 구성 요소</h2>
-                    <p class="text-gray-600 mb-8">효과적인 성명 분석은 여러 핵심 요소들의 균형 잡힌 조합으로 이루어집니다. 각 요소가 어떻게 이름의 길흉에 영향을 미치는지 이해하는 것이 중요합니다.</p>
-                    
-                    <div class="space-y-4">
-                        <div class="flex items-start gap-4 p-4 rounded-xl hover:bg-slate-50 transition">
-                            <div class="w-10 h-10 shrink-0 bg-amber-100 text-dagold rounded-full flex items-center justify-center"><i class="fa-solid fa-seedling"></i></div>
-                            <div>
-                                <h4 class="font-bold text-gray-900">사주 기운</h4>
-                                <p class="text-sm text-gray-600 mt-1">생년월일시로 파악한 개인의 타고난 오행(五行) 기운과 숙명적 특성</p>
-                            </div>
-                        </div>
-                        <div class="flex items-start gap-4 p-4 rounded-xl hover:bg-slate-50 transition">
-                            <div class="w-10 h-10 shrink-0 bg-blue-100 text-dablue rounded-full flex items-center justify-center"><i class="fa-solid fa-scale-balanced"></i></div>
-                            <div>
-                                <h4 class="font-bold text-gray-900">길흉 판단</h4>
-                                <p class="text-sm text-gray-600 mt-1">이름의 조합이 삶의 건강, 재물, 인간관계 등에 미치는 길흉 영향 분석</p>
-                            </div>
-                        </div>
-                        <div class="flex items-start gap-4 p-4 rounded-xl hover:bg-slate-50 transition">
-                            <div class="w-10 h-10 shrink-0 bg-green-100 text-green-700 rounded-full flex items-center justify-center"><i class="fa-solid fa-font"></i></div>
-                            <div>
-                                <h4 class="font-bold text-gray-900">자음·모음 분석</h4>
-                                <p class="text-sm text-gray-600 mt-1">한글 이름을 구성하는 각 자음과 모음의 고유한 에너지와 기운의 조화</p>
-                            </div>
-                        </div>
-                        <div class="flex items-start gap-4 p-4 rounded-xl hover:bg-slate-50 transition">
-                            <div class="w-10 h-10 shrink-0 bg-purple-100 text-purple-700 rounded-full flex items-center justify-center"><i class="fa-solid fa-map-location-dot"></i></div>
-                            <div>
-                                <h4 class="font-bold text-gray-900">개운 방향</h4>
-                                <p class="text-sm text-gray-600 mt-1">분석 결과를 바탕으로 취길피흉을 실현하는 구체적인 이름과 삶의 방향 제시</p>
-                            </div>
-                        </div>
+                <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <div class="trad-border p-6 bg-white shadow-sm reveal delay-100">
+                        <h4 class="font-bold text-trad-red text-lg mb-2">사주 기운</h4>
+                        <p class="text-trad-ink/80 text-sm leading-relaxed">생년월일시로 파악한 개인의 타고난 오행(五行) 기운과 숙명적 특성</p>
                     </div>
-
-                    <!-- AI Ad/Link -->
-                    <div class="mt-8 bg-gradient-to-r from-slate-100 to-slate-200 p-6 rounded-2xl border border-slate-300">
-                        <h4 class="font-bold text-dablue mb-2"><i class="fa-solid fa-robot mr-2"></i>한글구성성명학의 과학적인 AI 현대적 의미</h4>
-                        <p class="text-sm text-gray-700 mb-4">이름어때에서 당신의 성공 여부를 확인해 보세요.</p>
-                        <a href="http://k-names.co.kr" target="_blank" class="inline-block bg-white border border-gray-300 text-gray-800 px-5 py-2 rounded-full text-sm font-medium hover:border-dablue hover:text-dablue transition shadow-sm">
-                            k-names.co.kr 방문하기 <i class="fa-solid fa-arrow-up-right-from-square ml-1 text-xs"></i>
-                        </a>
+                    <div class="trad-border p-6 bg-white shadow-sm reveal delay-200">
+                        <h4 class="font-bold text-trad-red text-lg mb-2">길흉 판단</h4>
+                        <p class="text-trad-ink/80 text-sm leading-relaxed">이름의 조합이 삶의 건강, 재물, 인간관계 등에 미치는 길흉 영향 분석</p>
+                    </div>
+                    <div class="trad-border p-6 bg-white shadow-sm reveal delay-300">
+                        <h4 class="font-bold text-trad-red text-lg mb-2">자음·모음 분석</h4>
+                        <p class="text-trad-ink/80 text-sm leading-relaxed">한글 이름을 구성하는 각 자음과 모음의 고유한 에너지와 기운의 조화</p>
+                    </div>
+                    <div class="trad-border p-6 bg-white shadow-sm reveal delay-400">
+                        <h4 class="font-bold text-trad-red text-lg mb-2">개운 방향</h4>
+                        <p class="text-trad-ink/80 text-sm leading-relaxed">분석 결과를 바탕으로 취길피흉을 실현하는 구체적인 이름과 삶의 방향 제시</p>
                     </div>
                 </div>
+            </div>
 
-                <!-- 차이점 -->
-                <div>
-                    <h2 class="font-serif text-3xl font-bold text-gray-900 mb-6">현대과학의 한글구성성명학</h2>
-                    <p class="text-xl text-dagold font-medium mb-6">고리타분한 한문획수성명학과의 차이</p>
-                    <p class="text-gray-600 mb-8 leading-relaxed bg-slate-50 p-5 rounded-xl border-l-4 border-dablue">
+            <!-- 현대 성명학의 차이 & AI -->
+            <div class="grid md:grid-cols-2 gap-12 lg:gap-16 items-start border-t border-trad-border/50 pt-16">
+                <!-- 차별점 -->
+                <div class="reveal">
+                    <h2 class="font-serif text-2xl lg:text-3xl font-bold mb-6 text-trad-ink border-l-4 border-trad-red pl-4 leading-tight">
+                        고리타분한 한문획수성명학과,<br>
+                        현대과학의 한글구성성명학의 차이
+                    </h2>
+                    <p class="text-trad-ink/80 mb-8 font-light break-keep leading-relaxed bg-[#f4f1ea] p-5 border border-trad-border shadow-sm rounded-sm">
                         기존의 한자 중심 성명학과 달리, 한글구성성명학은 한글 고유의 자음과 모음 조합에서 발생하는 에너지를 분석하여 현대인의 삶에 맞는 실질적인 개운 방향을 제시합니다.
                     </p>
-
-                    <div class="grid gap-6">
-                        <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
-                            <h4 class="font-bold text-lg text-dablue mb-2">숙명과 노력의 조화</h4>
-                            <p class="text-gray-600 text-sm">바꿀 수 대없는 숙명 안에서도, 올바른 이름과 노력을 통해 길한 기운을 극대화할 수 있습니다.</p>
-                        </div>
-                        <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
-                            <h4 class="font-bold text-lg text-dablue mb-2">개인 맞춤 분석</h4>
-                            <p class="text-gray-600 text-sm">사주팔자의 고유한 특성에 맞춰 최적화된 이름을 제안하여, 각자의 삶에 가장 적합한 개운 방향을 안내합니다.</p>
-                        </div>
-                        <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
-                            <h4 class="font-bold text-lg text-dablue mb-2">실질적 변화</h4>
-                            <p class="text-gray-600 text-sm">단순한 이론이 아닌, 취길피흉의 원칙에 따라 삶에서 실질적인 변화를 이끌어내는 성명학입니다.</p>
-                        </div>
-                    </div>
+                    <ul class="space-y-6">
+                        <li class="flex items-start gap-4">
+                            <span class="mt-1 text-trad-red"><i class="fa-solid fa-check-circle"></i></span>
+                            <div>
+                                <h4 class="font-bold text-lg mb-1 text-trad-ink">숙명과 노력의 조화</h4>
+                                <p class="text-trad-ink/70 text-sm break-keep leading-relaxed">바꿀 수 없는 숙명 안에서도, 올바른 이름과 노력을 통해 길한 기운을 극대화할 수 있습니다.</p>
+                            </div>
+                        </li>
+                        <li class="flex items-start gap-4">
+                            <span class="mt-1 text-trad-red"><i class="fa-solid fa-check-circle"></i></span>
+                            <div>
+                                <h4 class="font-bold text-lg mb-1 text-trad-ink">개인 맞춤 분석</h4>
+                                <p class="text-trad-ink/70 text-sm break-keep leading-relaxed">사주팔자의 고유한 특성에 맞춰 최적화된 이름을 제안하여, 각자의 삶에 가장 적합한 개운 방향을 안내합니다.</p>
+                            </div>
+                        </li>
+                        <li class="flex items-start gap-4">
+                            <span class="mt-1 text-trad-red"><i class="fa-solid fa-check-circle"></i></span>
+                            <div>
+                                <h4 class="font-bold text-lg mb-1 text-trad-ink">실질적 변화</h4>
+                                <p class="text-trad-ink/70 text-sm break-keep leading-relaxed">단순한 이론이 아닌, 취길피흉의 원칙에 따라 삶에서 실질적인 변화를 이끌어내는 성명학입니다.</p>
+                            </div>
+                        </li>
+                    </ul>
                 </div>
 
+                <!-- AI 성명학 (도장 컨셉 포인트 디자인) -->
+                <div class="p-8 md:p-10 bg-trad-red text-[#fcfaf7] text-center shadow-lg relative reveal delay-200 mt-8 md:mt-0">
+                    <div class="trad-border-inner"></div>
+                    <div class="w-16 h-16 mx-auto bg-white rounded-full flex items-center justify-center text-3xl text-trad-red mb-6 shadow-md border border-trad-gold/50">
+                        <i class="fa-solid fa-laptop-code"></i>
+                    </div>
+                    <h3 class="font-serif text-2xl font-bold mb-4">한글구성성명학의<br>과학적인 AI 현대적 의미</h3>
+                    <p class="text-[#f4f1ea] text-sm md:text-base leading-relaxed mb-8 break-keep font-light opacity-90">
+                        이름어때(k-names.co.kr)에서<br>당신의 성공 여부를 확인해 보세요.
+                    </p>
+                    <a href="http://k-names.co.kr" target="_blank" class="inline-block bg-[#fcfaf7] border border-[#fcfaf7] text-trad-red px-8 py-3 hover:bg-transparent hover:text-[#fcfaf7] transition duration-300 font-bold tracking-widest text-sm shadow-md">
+                        이름어때 방문하기
+                    </a>
+                </div>
             </div>
         </div>
     </section>
 
     <!-- Section 4: 서비스 종류 -->
-    <section class="py-20 bg-slate-900 text-white">
-        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center mb-16">
-                <h2 class="font-serif text-3xl md:text-4xl font-bold mb-4">다지음이 제공하는 성명 서비스</h2>
-                <p class="text-gray-400 max-w-2xl mx-auto">다지음 이천은 인생의 다양한 시기와 상황에 맞는 성명 분석 서비스를 제공합니다. 각 서비스는 취길피흉의 원칙 아래, 삶의 방향을 바르게 이끌기 위한 목적으로 설계되었습니다.</p>
+    <section class="py-24 relative">
+        <div class="max-w-5xl mx-auto px-4 md:px-8">
+            <div class="text-center mb-16 reveal">
+                <h2 class="font-serif text-3xl md:text-4xl font-bold text-trad-ink tracking-wide">다지음이 제공하는 성명 서비스</h2>
+                <p class="mt-4 text-trad-ink/70 break-keep">다지음 이천은 인생의 다양한 시기와 상황에 맞는 성명 분석 서비스를 제공합니다.<br class="hidden md:block">각 서비스는 취길피흉의 원칙 아래, 삶의 방향을 바르게 이끌기 위한 목적으로 설계되었습니다.</p>
+                <div class="w-12 h-1 bg-trad-red mx-auto mt-6"></div>
             </div>
 
-            <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-                <!-- Service 1 -->
-                <div class="bg-slate-800 rounded-2xl p-6 border border-slate-700 hover:border-dagold transition duration-300 group">
-                    <div class="w-14 h-14 bg-slate-700 rounded-full flex items-center justify-center mb-6 group-hover:bg-dagold transition duration-300">
-                        <i class="fa-solid fa-baby text-2xl text-white"></i>
-                    </div>
-                    <h3 class="text-xl font-bold mb-3">신생아 작명</h3>
-                    <p class="text-slate-400 text-sm leading-relaxed">새 생명의 사주팔자를 분석하여 평생의 길한 기운을 불어넣는 최적의 한글 이름을 지어드립니다.</p>
+            <div class="grid sm:grid-cols-2 gap-6 md:gap-8">
+                <div class="bg-[#fdfcf9] border border-[#d1c7b8] p-6 md:p-8 hover:border-trad-red transition duration-300 shadow-sm reveal delay-100">
+                    <h3 class="text-xl font-bold text-trad-red mb-3 font-serif border-b border-trad-border/50 pb-3">신생아 작명</h3>
+                    <p class="text-trad-ink/80 text-sm md:text-base leading-loose break-keep">새 생명의 사주팔자를 분석하여 평생의 길한 기운을 불어넣는 최적의 한글 이름을 지어드립니다.</p>
                 </div>
-                <!-- Service 2 -->
-                <div class="bg-slate-800 rounded-2xl p-6 border border-slate-700 hover:border-dagold transition duration-300 group">
-                    <div class="w-14 h-14 bg-slate-700 rounded-full flex items-center justify-center mb-6 group-hover:bg-dagold transition duration-300">
-                        <i class="fa-solid fa-wand-magic-sparkles text-2xl text-white"></i>
-                    </div>
-                    <h3 class="text-xl font-bold mb-3">개명 상담</h3>
-                    <p class="text-slate-400 text-sm leading-relaxed">현재의 이름이 삶에 미치는 길흉을 분석하고, 보다 나은 운을 위한 개명 방향을 제시합니다.</p>
+                
+                <div class="bg-[#fdfcf9] border border-[#d1c7b8] p-6 md:p-8 hover:border-trad-red transition duration-300 shadow-sm reveal delay-200">
+                    <h3 class="text-xl font-bold text-trad-red mb-3 font-serif border-b border-trad-border/50 pb-3">개명 상담</h3>
+                    <p class="text-trad-ink/80 text-sm md:text-base leading-loose break-keep">현재의 이름이 삶에 미치는 길흉을 분석하고, 보다 나은 운을 위한 개명 방향을 제시합니다.</p>
                 </div>
-                <!-- Service 3 -->
-                <div class="bg-slate-800 rounded-2xl p-6 border border-slate-700 hover:border-dagold transition duration-300 group">
-                    <div class="w-14 h-14 bg-slate-700 rounded-full flex items-center justify-center mb-6 group-hover:bg-dagold transition duration-300">
-                        <i class="fa-solid fa-brain text-2xl text-white"></i>
-                    </div>
-                    <h3 class="text-xl font-bold mb-3">MBTI 심리성격 분석</h3>
-                    <p class="text-slate-400 text-sm leading-relaxed">이름을 종합적으로 분석하여 현재의 심리상태와 앞으로의 삶의 방향을 안내합니다.</p>
+
+                <div class="bg-[#fdfcf9] border border-[#d1c7b8] p-6 md:p-8 hover:border-trad-red transition duration-300 shadow-sm reveal delay-300">
+                    <h3 class="text-xl font-bold text-trad-red mb-3 font-serif border-b border-trad-border/50 pb-3">mbti 심리성격 분석</h3>
+                    <p class="text-trad-ink/80 text-sm md:text-base leading-loose break-keep">이름을 종합적으로 분석하여 현재의 심리상태와 앞으로의 삶의 방향을 안내합니다.</p>
                 </div>
-                <!-- Service 4 -->
-                <div class="bg-slate-800 rounded-2xl p-6 border border-slate-700 hover:border-dagold transition duration-300 group">
-                    <div class="w-14 h-14 bg-slate-700 rounded-full flex items-center justify-center mb-6 group-hover:bg-dagold transition duration-300">
-                        <i class="fa-solid fa-building text-2xl text-white"></i>
-                    </div>
-                    <h3 class="text-xl font-bold mb-3">상호·아호 작명</h3>
-                    <p class="text-slate-400 text-sm leading-relaxed">사업체나 아호에도 한글구성성명학을 적용하여 번창하고 길한 기운이 깃든 이름을 제안합니다.</p>
+
+                <div class="bg-[#fdfcf9] border border-[#d1c7b8] p-6 md:p-8 hover:border-trad-red transition duration-300 shadow-sm reveal delay-400">
+                    <h3 class="text-xl font-bold text-trad-red mb-3 font-serif border-b border-trad-border/50 pb-3">상호·아호 작명</h3>
+                    <p class="text-trad-ink/80 text-sm md:text-base leading-loose break-keep">사업체나 아호에도 한글구성성명학을 적용하여 번창하고 길한 기운이 깃든 이름을 제안합니다.</p>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Section 5: 철학과 결론 -->
-    <section class="py-20 bg-amber-50">
-        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center mb-12">
-                <h2 class="font-serif text-3xl md:text-4xl font-bold text-dablue mb-4">취길피흉(取吉避凶)</h2>
-                <p class="text-xl text-dagold font-medium">이름으로 운명을 개척하다</p>
+    <!-- Section 5: 결론 -->
+    <section class="py-24 bg-[#e9e4d9] border-t border-trad-border">
+        <div class="max-w-5xl mx-auto px-4 md:px-8">
+            <div class="text-center mb-16 reveal">
+                <!-- 도장 느낌의 낙관 디자인 -->
+                <div class="mx-auto w-20 h-20 bg-transparent border-4 border-trad-red flex flex-col items-center justify-center text-trad-red font-serif font-bold text-lg leading-none mb-8 opacity-80 transform -rotate-6">
+                    <span>취길</span>
+                    <span>피흉</span>
+                </div>
+                <h2 class="font-serif text-3xl md:text-4xl font-bold text-trad-ink mb-2 tracking-widest">취길피흉(取吉避凶)</h2>
+                <p class="text-trad-red font-bold text-lg md:text-xl">이름으로 운명을 개척하다</p>
             </div>
 
-            <div class="bg-white rounded-3xl shadow-lg p-8 md:p-12 mb-12">
-                <div class="grid md:grid-cols-2 gap-8 items-center border-b border-gray-100 pb-8 mb-8">
-                    <div>
-                        <h4 class="font-bold text-gray-500 mb-2">숙명론적 시각</h4>
-                        <p class="text-lg text-gray-800">"사주팔자가 정해졌으니, 노력해도 소용없다."</p>
-                    </div>
-                    <div class="hidden md:flex justify-center text-gray-300 text-3xl"><i class="fa-solid fa-arrow-right-arrow-left"></i></div>
-                    <div>
-                        <h4 class="font-bold text-dablue mb-2">다지음의 시각</h4>
-                        <ul class="text-gray-800 space-y-2 text-sm md:text-base">
-                            <li><i class="fa-solid fa-check text-dagold mr-2"></i>사주팔자는 바꿀 수 없지만</li>
-                            <li><i class="fa-solid fa-arrow-right text-gray-400 mx-2"></i>올바른 이름과 노력으로 길흉이 달라지며</li>
-                            <li><i class="fa-solid fa-arrow-right text-gray-400 mx-2"></i>취길피흉의 실천으로 운명을 개척하고</li>
-                            <li><i class="fa-solid fa-arrow-right text-gray-400 mx-2"></i>더 나은 삶을 스스로 이끌어갈 수 있다.</li>
-                        </ul>
-                    </div>
-                </div>
-
-                <div class="text-center">
-                    <h3 class="font-bold text-2xl text-gray-900 mb-4">핵심은 실천입니다</h3>
-                    <p class="text-gray-600 leading-relaxed max-w-2xl mx-auto mb-8">
-                        단순히 운명을 받아들이는 것이 아니라, 주어진 숙명 안에서 어떻게 최선의 삶을 살 것인지가 중요합니다. <strong class="text-dablue">이름은 그 첫 번째 실천입니다.</strong>
+            <!-- 시각 비교 -->
+            <div class="grid md:grid-cols-2 gap-8 items-stretch mb-16">
+                <div class="bg-[#fdfcf9] border border-trad-border p-8 relative shadow-sm reveal delay-100">
+                    <h4 class="font-serif font-bold text-trad-ink text-xl mb-4 text-center">숙명론적 시각</h4>
+                    <p class="text-center text-trad-ink/70 italic text-lg leading-loose break-keep mt-8">
+                        "사주팔자가 정해졌으니,<br>노력해도 소용없다."
                     </p>
-                    
-                    <div class="bg-slate-50 p-6 rounded-2xl border border-slate-200">
-                        <h4 class="font-bold text-lg text-dablue mb-3"><i class="fa-regular fa-handshake mr-2"></i> 다지음의 약속</h4>
-                        <p class="text-gray-700 leading-relaxed">
-                            한글구성성명학은 취길피흉(取吉避凶)으로 운명을 개척해 나가는 길잡이입니다.<br>
-                            타고난 운명 안에서 이름의 소리에너지가 최선의 삶을 향해 나아갈 수 있도록 다지음이 항상 함께하겠습니다.
-                        </p>
-                    </div>
+                </div>
+                
+                <div class="bg-[#fdfcf9] border border-trad-red p-8 relative shadow-md reveal delay-200">
+                    <h4 class="font-serif font-bold text-trad-red text-xl mb-4 text-center border-b border-trad-border/50 pb-4">다지음의 시각</h4>
+                    <ul class="space-y-4 text-trad-ink/90 font-medium break-keep">
+                        <li class="flex items-start gap-3"><span class="text-trad-gold mt-1">✓</span> 사주팔자는 바꿀 수 없지만</li>
+                        <li class="flex items-start gap-3 pl-4"><span class="text-trad-red mt-1">→</span> 올바른 이름과 노력으로 길흉이 달라지며</li>
+                        <li class="flex items-start gap-3 pl-4"><span class="text-trad-red mt-1">→</span> 취길피흉의 실천으로 운명을 개척하고</li>
+                        <li class="flex items-start gap-3 pl-4"><span class="text-trad-red mt-1">→</span> 더 나은 삶을 스스로 이끌어갈 수 있다.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="text-center max-w-3xl mx-auto reveal delay-300">
+                <h3 class="font-serif font-bold text-2xl text-trad-ink mb-6">핵심 질문</h3>
+                <p class="text-trad-ink/80 text-lg leading-loose break-keep mb-12">
+                    단순히 운명을 받아들이는 것이 아니라,<br>주어진 숙명 안에서 어떻게 최선의 삶을 살 것인지가 중요합니다.<br>
+                    <strong class="text-trad-red text-xl block mt-4 font-serif">이름은 그 첫 번째 실천입니다.</strong>
+                </p>
+
+                <div class="inline-block text-left bg-[#fdfcf9] p-8 border border-trad-border shadow-sm max-w-2xl w-full text-center">
+                    <h4 class="font-serif font-bold text-trad-ink text-xl mb-4 border-b border-trad-border pb-4 flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-leaf text-trad-gold"></i> 다지음의 약속
+                    </h4>
+                    <p class="text-trad-ink/90 text-base md:text-lg leading-loose break-keep">
+                        한글구성성명학은 취길피흉(取吉避凶)으로 운명을 개척해 나가는 길잡이입니다.<br>
+                        타고난 운명 안에서 이름의 소리에너지가 최선의 삶을 향해 나아갈수 있도록 다지음이 항상 함께하겠습니다.
+                    </p>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Footer / CTA -->
-    <footer class="bg-dablue text-white py-16 border-t-[12px] border-dagold">
-        <div class="max-w-4xl mx-auto px-4 text-center">
-            <h2 class="font-serif text-2xl md:text-3xl font-bold mb-6">이름은 단순한 호칭이 아닙니다.</h2>
-            <p class="text-blue-200 text-lg mb-10 leading-relaxed">
-                매일 불리며 삶의 에너지에 영향을 미치는 이름,<br>
-                다지음 이천과 함께 당신의 운명을 밝히는 이름을 찾아보십시오.
-            </p>
+    <!-- Mobile Sticky CTA -->
+    <div class="fixed bottom-0 left-0 w-full bg-[#fcfaf7] border-t border-trad-border p-4 pb-safe z-50 md:hidden shadow-[0_-10px_20px_-10px_rgba(0,0,0,0.05)]">
+        <a href="tel:0504-4645-7481" class="flex items-center justify-center w-full bg-trad-red text-[#fcfaf7] rounded-none border border-trad-darkred py-3.5 font-serif font-bold text-lg active:bg-trad-darkred transition-colors shadow-md">
+            <i class="fa-solid fa-phone mr-2"></i> 지사장 한강나 상담하기
+        </a>
+    </div>
+
+    <!-- Desktop Footer -->
+    <footer class="hidden md:block bg-trad-ink text-[#d1c7b8] py-16 text-center border-t-8 border-trad-darkred relative">
+        <div class="absolute inset-0 bg-paper opacity-5 mix-blend-overlay"></div>
+        <div class="relative z-10">
+            <h2 class="font-serif text-2xl font-bold text-[#fcfaf7] mb-4 tracking-wide">이름은 단순한 호칭이 아닙니다.</h2>
+            <p class="text-[#a8a195] text-lg mb-8 font-light">매일 불리며 삶의 에너지에 영향을 미치는 이름,<br>다지음 이천과 함께 당신의 운명을 밝히는 이름을 찾아보십시오.</p>
             
-            <div class="inline-flex flex-col sm:flex-row gap-4 items-center justify-center bg-white/10 p-6 rounded-2xl backdrop-blur-sm border border-white/20">
-                <div class="text-left">
-                    <p class="text-blue-200 text-sm mb-1">상담 문의 / 예약</p>
-                    <p class="text-2xl font-bold"><i class="fa-solid fa-phone text-dagold mr-2"></i>0504-4645-7481</p>
-                    <p class="text-sm mt-1">다지음 이천 지사장 <span class="font-bold text-dagold">한강나</span></p>
-                </div>
-                <div class="hidden sm:block w-px h-16 bg-white/20 mx-4"></div>
-                <a href="tel:0504-4645-7481" class="mt-4 sm:mt-0 bg-dagold hover:bg-amber-600 text-white px-8 py-3 rounded-full font-bold transition shadow-lg w-full sm:w-auto">
-                    지금 상담하기
+            <div class="flex items-center justify-center gap-6 mb-8 text-lg">
+                <span class="font-medium">지사장 한강나</span>
+                <div class="w-px h-4 bg-trad-border/30"></div>
+                <a href="tel:0504-4645-7481" class="text-trad-gold font-bold tracking-widest text-xl flex items-center gap-2 hover:text-[#fcfaf7] transition-colors">
+                    <i class="fa-solid fa-phone"></i> 0504-4645-7481
                 </a>
             </div>
-
-            <div class="mt-16 pt-8 border-t border-white/10 text-sm text-blue-300">
-                <p>&copy; 2024 다지음 이천. All rights reserved.</p>
-                <p class="mt-2 text-xs">본 페이지는 한글구성성명학 원리를 바탕으로 제작되었습니다.</p>
-            </div>
+            <div class="w-24 h-px bg-trad-border/20 mx-auto mb-8"></div>
+            <p class="text-sm font-light">&copy; 2024 다지음 이천. All rights reserved. 본 페이지는 한글구성성명학 원리를 바탕으로 제작되었습니다.</p>
         </div>
     </footer>
 
+    <!-- 스크롤 애니메이션 스크립트 -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const observerOptions = {
+                root: null,
+                rootMargin: '0px 0px -10% 0px',
+                threshold: 0.1
+            };
+
+            const observer = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('active');
+                        observer.unobserve(entry.target); // 한 번 보이면 애니메이션 클래스 유지
+                    }
+                });
+            }, observerOptions);
+
+            // 클래스에 reveal이 들어간 모든 요소 관찰 시작
+            const revealElements = document.querySelectorAll('.reveal');
+            revealElements.forEach(el => observer.observe(el));
+        });
+    </script>
 </body>
 </html>
